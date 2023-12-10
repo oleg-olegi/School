@@ -2,7 +2,6 @@ package ru.hogwarts.school.service;
 
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
-import ru.hogwarts.school.model.Student;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,6 +27,9 @@ public class FacultyService {
     }
 
     public Faculty updateFaculty(Faculty faculty) {
+        if (!facultyMap.containsValue(faculty)) {
+            return null;
+        }
         facultyMap.put(faculty.getId(), faculty);
         return faculty;
     }

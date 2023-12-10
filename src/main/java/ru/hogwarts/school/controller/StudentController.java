@@ -1,27 +1,31 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.StudentService;
 
-import javax.xml.stream.StreamFilter;
 import java.util.Collection;
-import java.util.List;
-import java.util.stream.Stream;
+
 
 @RestController
 @RequestMapping("/student")
 public class StudentController {
 
-    private StudentService studentService;
+    private final StudentService studentService;
 
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
 
     @GetMapping("{id}")
-    public Student findStudent(@PathVariable long id) {
-        return studentService.findStudent(id);
+    public ResponseEntity<Student> findStudent(@PathVariable long id) {
+        Student student = studentService.findStudent(id);
+        if (student == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(student);
     }
 
     @PostMapping
@@ -30,19 +34,20 @@ public class StudentController {
     }
 
     @PutMapping
-    public Student editStudent(@RequestBody Student student) {
-        return studentService.createStudent(student);
+    public ResponseEntity<Student> editStudent(@RequestBody Student student) {
+        Student foundedStudent = studentService.updateStudent(student);
+        if (foundedStudent == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(foundedStudent);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete/{id}")
     public Student deleteStudent(@PathVariable long id) {
         return studentService.deleteStudent(id);
     }
 
-    //1. Добавить фильтрацию студентов по возрасту.
-    //
-    //Для этого в StudentController добавить эндпоинт, который принимает число (возраст — поле age)
-    // и возвращает список студентов, у которых совпал возраст с переданным числом.
+
     @GetMapping("/ageFilter/{age}")
     public Collection<Student> ageFilteredStudents(@PathVariable int age) {
         return studentService.filterAge(age);
