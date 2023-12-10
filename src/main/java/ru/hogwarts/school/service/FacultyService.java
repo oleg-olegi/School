@@ -27,7 +27,7 @@ public class FacultyService {
     }
 
     public Faculty updateFaculty(Faculty faculty) {
-        if (!facultyMap.containsValue(faculty)) {
+        if (!facultyMap.containsKey(faculty.getId())) {
             return null;
         }
         facultyMap.put(faculty.getId(), faculty);

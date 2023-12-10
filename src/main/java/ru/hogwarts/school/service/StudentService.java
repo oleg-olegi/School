@@ -27,7 +27,7 @@ public class StudentService {
     }
 
     public Student updateStudent(Student student) {
-        if (!students.containsValue(student)) {
+        if (!students.containsKey(student.getId())) {
             return null;
         }
         students.put(student.getId(), student);
