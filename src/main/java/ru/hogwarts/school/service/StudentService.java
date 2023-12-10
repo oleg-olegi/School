@@ -3,7 +3,10 @@ package ru.hogwarts.school.service;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class StudentService {
@@ -31,5 +34,12 @@ public class StudentService {
 
     public Student deleteStudent(Long id) {
         return students.remove(id);
+    }
+
+    public Collection<Student> filterAge(int age) {
+        return students.values()
+                .stream()
+                .filter(student -> student.getAge()==age)
+                .collect(Collectors.toList());
     }
 }
