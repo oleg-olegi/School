@@ -1,7 +1,9 @@
 package ru.hogwarts.school.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,37 +11,31 @@ import java.util.stream.Collectors;
 
 @Service
 public class StudentService {
-    private final HashMap<Long, Student> students;
-    private Long counterID = 0L;
+    private final StudentRepository studentRepository;
 
-    public StudentService() {
-        this.students = new HashMap<>();
+    @Autowired
+    public StudentService(StudentRepository studentRepository) {
+        this.studentRepository = studentRepository;
     }
 
     public Student createStudent(Student student) {
-        student.setId(++counterID);
-        students.put(counterID, student);
-        return student;
+        return studentRepository.save(student);
     }
 
     public Student findStudent(Long id) {
-        return students.get(id);
+        return studentRepository.findById(id).get();
     }
 
     public Student updateStudent(Student student) {
-        if (!students.containsKey(student.getId())) {
-            return null;
-        }
-        students.put(student.getId(), student);
-        return student;
+        return studentRepository.save(student);
     }
 
-    public Student deleteStudent(Long id) {
-        return students.remove(id);
+    public void deleteStudent(Long id) {
+        studentRepository.deleteById(id);
     }
 
     public Collection<Student> filterAge(int age) {
-        return students.values()
+        return studentRepository.findAll()
                 .stream()
                 .filter(student -> student.getAge() == age)
                 .collect(Collectors.toList());
