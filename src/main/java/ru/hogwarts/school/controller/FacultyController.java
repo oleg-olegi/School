@@ -46,12 +46,15 @@ public class FacultyController {
     }
 
     @GetMapping("/findByColorOrName")
-    public ResponseEntity findFacultyByColorOrName(@RequestParam String part) {
-        Faculty foundFaculty = facultyService.findByColorOrName(part);
-        if (foundFaculty == null || part.isBlank()) {
-            return ResponseEntity.notFound().build();
+    public ResponseEntity findFacultyByColorOrName(@RequestParam(required = false) String name,
+                                                   @RequestParam(required = false) String color) {
+        if (name != null && !name.isBlank()) {
+            return ResponseEntity.ok(facultyService.findByName(name));
         }
-        return ResponseEntity.ok(foundFaculty);
+        if (color != null && !color.isBlank()) {
+            return ResponseEntity.ok(facultyService.findByColor(color));
+        }
+        return ResponseEntity.notFound().build();
     }
 
     @GetMapping("/colorFilter/{color}")
