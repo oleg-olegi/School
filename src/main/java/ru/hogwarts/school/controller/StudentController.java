@@ -8,6 +8,7 @@ import ru.hogwarts.school.service.StudentService;
 import java.util.Collection;
 
 
+
 @RestController
 @RequestMapping("/student")
 public class StudentController {
@@ -24,7 +25,6 @@ public class StudentController {
         if (student == null) {
             return ResponseEntity.notFound().build();
         }
-
         return ResponseEntity.ok(student);
     }
 
@@ -48,9 +48,18 @@ public class StudentController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("ageBetween/{min}/{max}")
+    public ResponseEntity findByAgeBetween(@PathVariable int min, @PathVariable int max) {
+        Collection<Student> students = studentService.findByAgeBetween(min, max);
+        if (students.isEmpty()) {
+            ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(students);
+    }
 
     @GetMapping("/ageFilter/{age}")
     public Collection<Student> ageFilteredStudents(@PathVariable int age) {
+
         return studentService.filterAge(age);
     }
 }
