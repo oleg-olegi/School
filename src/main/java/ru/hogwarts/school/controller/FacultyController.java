@@ -57,6 +57,16 @@ public class FacultyController {
         return ResponseEntity.notFound().build();
     }
 
+    @GetMapping("{facultyId}/students")
+    public ResponseEntity getFacultyStudents(@PathVariable long facultyId) {
+        Faculty faculty = facultyService.findFaculty(facultyId);
+        if (faculty != null) {
+            return ResponseEntity.ok(faculty.getStudent());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/colorFilter/{color}")
     public Collection<Faculty> colorFilteredFaculties(@PathVariable String color) {
         return facultyService.filterColor(color);
