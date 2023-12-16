@@ -3,6 +3,7 @@ package ru.hogwarts.school.controller;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
+import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
@@ -40,14 +41,14 @@ public class FacultyController {
     }
 
     @DeleteMapping("{id}")
-    public ResponseEntity deleteFaculty(@PathVariable long id) {
+    public ResponseEntity<Void> deleteFaculty(@PathVariable long id) {
         facultyService.deleteFaculty(id);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/findByColorOrName")
-    public ResponseEntity findFacultyByColorOrName(@RequestParam(required = false) String name,
-                                                   @RequestParam(required = false) String color) {
+    public ResponseEntity<Faculty> findFacultyByColorOrName(@RequestParam(required = false) String name,
+                                                            @RequestParam(required = false) String color) {
         if (name != null && !name.isBlank()) {
             return ResponseEntity.ok(facultyService.findByName(name));
         }
@@ -57,11 +58,11 @@ public class FacultyController {
         return ResponseEntity.notFound().build();
     }
 
-    @GetMapping("{facultyId}/students")
-    public ResponseEntity getFacultyStudents(@PathVariable long facultyId) {
-        Faculty faculty = facultyService.findFaculty(facultyId);
-        if (faculty != null) {
-            return ResponseEntity.ok(faculty.getStudent());
+    @GetMapping("/studentsOfFaculty/{facultyId}")
+    public ResponseEntity<Collection<Student>> getStudentsOfFaculty(@PathVariable long facultyId) {
+        Collection<Student> students = facultyService.getStudentsOfFaculty(facultyId);
+        if (!students.isEmpty()) {
+            return ResponseEntity.ok(students);
         } else {
             return ResponseEntity.notFound().build();
         }

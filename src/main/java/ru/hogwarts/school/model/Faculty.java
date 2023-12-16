@@ -27,7 +27,7 @@ public class Faculty {
     }
 
     public Collection<Student> getStudent() {
-        return students;
+        return this.students;
     }
 
     public Long getId() {
