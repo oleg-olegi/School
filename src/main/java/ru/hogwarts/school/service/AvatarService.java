@@ -3,6 +3,7 @@ package ru.hogwarts.school.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.model.Student;
@@ -29,8 +30,8 @@ public class AvatarService {
 
     public void uploadAvatar(Long studentId, MultipartFile file) throws IOException {
         Student student = studentService.findStudent(studentId);
-        Path filePath = Path.of(avatarDir, studentId + "." + getExtension(file.getOriginalFilename()));
-        Files.createDirectory(filePath.getParent());
+        Path filePath = Path.of(avatarDir, student.getName() + "." + getExtension(file.getOriginalFilename()));
+        Files.createDirectories(filePath.getParent());
         Files.deleteIfExists(filePath);
         try (
                 InputStream io = file.getInputStream();
@@ -40,16 +41,21 @@ public class AvatarService {
         ) {
             bis.transferTo(bos);
         }
-        Avatar avatar = findAvatar(studentId);
+        Avatar avatar = new Avatar();
         avatar.setStudent(student);
         avatar.setFilePath(filePath.toString());
-        avatar.setData(avatar.getData());
-        avatar.setFileSize(avatar.getFileSize());
-        avatar.setMediaType(avatar.getMediaType());
+        avatar.setData(file.getBytes());
+        avatar.setFileSize(file.getSize());
+        avatar.setMediaType(file.getContentType());
         avatarRepository.save(avatar);
     }
 
-    private Avatar findAvatar(long studentId) {
+    @Transactional
+    public void deleteAvatar(long studentId) {
+        avatarRepository.deleteByStudentId(studentId);
+    }
+
+    public Avatar findAvatar(long studentId) {
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
 
