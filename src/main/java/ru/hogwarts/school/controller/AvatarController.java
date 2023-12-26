@@ -18,7 +18,7 @@ import java.nio.file.Path;
 
 @RestController
 public class AvatarController {
-    private AvatarService avatarService;
+    private final AvatarService avatarService;
 
     public AvatarController(AvatarService avatarService) {
         this.avatarService = avatarService;
@@ -31,26 +31,37 @@ public class AvatarController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/avatar_from_db/{studentId}")
-    public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long id) {
-        Avatar avatar = avatarService.findAvatar(id);
+    @GetMapping("/avatar-preview/{studentId}")
+    public ResponseEntity<byte[]> uploadPreview(@PathVariable Long studentId) {
+        Avatar preview = avatarService.findAvatar(studentId);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentLength(preview.getData().length);
+        headers.setContentType(MediaType.parseMediaType(preview.getMediaType()));
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(preview.getData());
+    }
+
+    @GetMapping("/avatar-from-db/{studentId}")
+    public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long studentId) {
+        Avatar avatar = avatarService.findAvatar(studentId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(avatar.getMediaType()));
         headers.setContentLength(avatar.getData().length);
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
-@GetMapping("avatar_from_file/{studentId}")
-    public void downloadAvatar(@PathVariable Long studentId, HttpServletResponse response) throws IOException{
+
+    @GetMapping("avatar-from-file/{studentId}")
+    public void downloadAvatar(@PathVariable Long studentId, HttpServletResponse response) throws IOException {
         Avatar avatar = avatarService.findAvatar(studentId);
         Path path = Path.of(avatar.getFilePath());
-        try(InputStream is = Files.newInputStream(path);
-            OutputStream os = response.getOutputStream();) {
+        try (InputStream is = Files.newInputStream(path);
+             OutputStream os = response.getOutputStream();) {
             response.setStatus(200);
             response.setContentType(avatar.getMediaType());
             response.setContentLength(avatar.getData().length);
             is.transferTo(os);
         }
     }
+
     @DeleteMapping("/deleteAvatar/{studentId}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable long studentId) {
         avatarService.deleteAvatar(studentId);

@@ -1,9 +1,6 @@
 package ru.hogwarts.school.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Avatar {
@@ -14,12 +11,19 @@ public class Avatar {
     private String filePath;
     private Long fileSize;
     private String mediaType;
+    @Lob
     private byte[] data;
+
     @OneToOne
     private Student student;
 
     public Avatar() {
-            }
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
 
     public Long getId() {
         return id;
@@ -63,9 +67,5 @@ public class Avatar {
 
     public Student getStudent() {
         return student;
-    }
-
-    public void setStudent(Student student) {
-        this.student = student;
     }
 }
