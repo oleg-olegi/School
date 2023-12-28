@@ -64,7 +64,9 @@ public class AvatarController {
 
     @DeleteMapping("/deleteAvatar/{studentId}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable long studentId) {
-        avatarService.deleteAvatar(studentId);
-        return ResponseEntity.ok().build();
-    }
+        if (avatarService.findAvatar(studentId).getData()!=null) {
+            avatarService.deleteAvatar(studentId);
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.badRequest().build();}
 }
