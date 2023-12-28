@@ -32,7 +32,7 @@ public class AvatarController {
     }
 
     @GetMapping("/avatar-preview/{studentId}")
-    public ResponseEntity<byte[]> uploadPreview(@PathVariable Long studentId) {
+    public ResponseEntity<byte[]> downloadPreview(@PathVariable Long studentId) {
         Avatar preview = avatarService.findAvatar(studentId);
         HttpHeaders headers = new HttpHeaders();
         headers.setContentLength(preview.getData().length);
@@ -57,7 +57,7 @@ public class AvatarController {
              OutputStream os = response.getOutputStream();) {
             response.setStatus(200);
             response.setContentType(avatar.getMediaType());
-            response.setContentLength(avatar.getData().length);
+            response.setContentLength((int)avatar.getFileSize());
             is.transferTo(os);
         }
     }
