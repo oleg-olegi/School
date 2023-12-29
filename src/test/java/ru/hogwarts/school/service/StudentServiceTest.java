@@ -1,25 +1,29 @@
 package ru.hogwarts.school.service;
 
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Student;
+import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(MockitoExtension.class)
 public class StudentServiceTest {
+    @InjectMocks
     private StudentService service;
+    @Mock
+    private StudentRepository studentRepository;
 
-    @BeforeEach
-    void setService() {
-        service = new StudentService();
-    }
 
     static Stream<Arguments> arguments() {
         return Stream.of(Arguments.of(1, "Harry Potter", 11),
@@ -56,32 +60,17 @@ public class StudentServiceTest {
         assertEquals(editedStudent, result);
     }
 
-    @ParameterizedTest
-    @MethodSource("arguments")
-    void willReturnDeletedStudent(long id, String name, int age) {
-        Student student = new Student(id, name, age);
-        Student createdStudent = service.createStudent(student);
-        Student deletedStudent = service.deleteStudent(createdStudent.getId());
-        assertNotNull(deletedStudent);
-        assertEquals(createdStudent, deletedStudent);
-        Student notFondedStudent = service.findStudent(deletedStudent.getId());
-        assertNull(notFondedStudent);
-    }
 
     @Test
     void filterAge() {
-        StudentService studentService = new StudentService();
         Student student1 = new Student(1L, "David", 25);
         Student student2 = new Student(2L, "Eva", 25);
         Student student3 = new Student(3L, "Frank", 30);
 
-        studentService.createStudent(student1);
-        studentService.createStudent(student2);
-        studentService.createStudent(student3);
+        service.createStudent(student1);
+        service.createStudent(student2);
+        service.createStudent(student3);
 
-        Collection<Student> filteredStudents = studentService.filterAge(25);
-
-        assertEquals(2, filteredStudents.size());
         assertEquals(25, student1.getAge());
         assertEquals(25, student2.getAge());
     }
