@@ -7,6 +7,7 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,10 +24,14 @@ public class StudentService {
     }
 
     public Student findStudent(Long id) {
-        return studentRepository.findById(id).get();
+        return studentRepository.findStudentById(id);
     }
 
     public Student updateStudent(Student student) {
+        Student updatedStudent = studentRepository.findStudentById(student.getId());
+        if (updatedStudent == null) {
+            return null;
+        }
         return studentRepository.save(student);
     }
 

@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ru.hogwarts.school.model.Avatar;
 import ru.hogwarts.school.service.AvatarService;
 
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

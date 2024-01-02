@@ -35,11 +35,11 @@ public class StudentController {
 
     @PutMapping
     public ResponseEntity<Student> editStudent(@RequestBody Student student) {
-        Student foundedStudent = studentService.updateStudent(student);
-        if (foundedStudent == null) {
+        Student studentForEdit = studentService.updateStudent(student);
+        if (studentForEdit == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(foundedStudent);
+        return ResponseEntity.ok(studentForEdit);
     }
 
     @DeleteMapping("/delete/{id}")
