@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -56,7 +55,7 @@ public class StudentServiceTest {
         Student student = new Student(id, name, age);
         Student createdStudent = service.createStudent(student);
         Student editedStudent = new Student(createdStudent.getId(), "Updated" + name, age);
-        Student result = service.updateStudent(editedStudent);
+        Student result = service.updateStudent(id, editedStudent);
         assertEquals(editedStudent, result);
     }
 

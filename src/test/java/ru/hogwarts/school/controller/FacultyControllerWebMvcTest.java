@@ -36,15 +36,15 @@ public class FacultyControllerWebMvcTest {
 
     @Test
     public void getFaculty() throws Exception {
-        long id = 1;
-        String name = "Математика";
+        long id = 1L;
+        String name = "ФизМат";
         String color = "Синий";
 
         Faculty faculty = new Faculty(id, name, color);
-        when(facultyRepository.findById(id)).thenReturn(Optional.of(faculty));
+        when(facultyRepository.findFacultyById(id)).thenReturn(faculty);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .get("/faculty/1"))
+                        .get("/faculty/" + id))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(id))
                 .andExpect(jsonPath("$.name").value(name))
@@ -53,8 +53,8 @@ public class FacultyControllerWebMvcTest {
 
     @Test
     public void createFaculty() throws Exception {
-        long id = 1;
-        String name = "Математика";
+        long id = 1L;
+        String name = "ФизМат";
         String color = "Синий";
         JSONObject facultyObject = new JSONObject();
         facultyObject.put("name", name);
@@ -77,7 +77,7 @@ public class FacultyControllerWebMvcTest {
     @Test
     public void editFaculty() throws Exception {
         long id = 1;
-        String name = "Математика";
+        String name = "ФизМат";
         String color = "Синий";
         String newColor = "Yellow";
         JSONObject studentObject = new JSONObject();
@@ -88,11 +88,12 @@ public class FacultyControllerWebMvcTest {
         Faculty curFaculty = new Faculty(id, name, color);
         Faculty newFaculty = new Faculty(id, name, newColor);
 
-        when(facultyRepository.findById(any(Long.class))).thenReturn(Optional.of(curFaculty));
+        when(facultyService.updateFaculty(eq(id), any(Faculty.class))).thenReturn(newFaculty);
+        when(facultyRepository.findFacultyById(id)).thenReturn(curFaculty);
         when(facultyRepository.save(any(Faculty.class))).thenReturn(newFaculty);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/faculty")
+                        .put("/faculty/update/" + id)
                         .content(studentObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
@@ -105,11 +106,11 @@ public class FacultyControllerWebMvcTest {
     @Test
     public void deleteFaculty() throws Exception {
         long id = 1;
-        String name = "Математика";
+        String name = "Матan";
         String color = "Синий";
         Faculty faculty = new Faculty(id, name, color);
 
-        when(facultyRepository.findById(any())).thenReturn(Optional.of(faculty));
+        when(facultyRepository.findFacultyById(id)).thenReturn(faculty);
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/faculty/" + id)

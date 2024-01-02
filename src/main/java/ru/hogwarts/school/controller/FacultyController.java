@@ -31,10 +31,10 @@ public class FacultyController {
         return ResponseEntity.ok(foundedFaculty);
     }
 
-    @PutMapping//update
-    public ResponseEntity<Faculty> editFaculty(@RequestBody Faculty faculty) {
-        Faculty editedFaculty = facultyService.updateFaculty(faculty);
-        if (faculty == null) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Faculty> editFaculty(@PathVariable long id, @RequestBody Faculty faculty) {
+        Faculty editedFaculty = facultyService.updateFaculty(id, faculty);
+        if (editedFaculty == null) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(editedFaculty);

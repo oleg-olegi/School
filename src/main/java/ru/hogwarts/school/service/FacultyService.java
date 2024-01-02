@@ -24,11 +24,17 @@ public class FacultyService {
     }
 
     public Faculty findFaculty(Long id) {
-        return facultyRepository.findById(id).get();
+        return facultyRepository.findFacultyById(id);
     }
 
-    public Faculty updateFaculty(Faculty faculty) {
-        return facultyRepository.save(faculty);
+    public Faculty updateFaculty(long id, Faculty faculty) {
+        Faculty updatedFaculty = facultyRepository.findFacultyById(id);
+        if (updatedFaculty == null) {
+            return null;
+        }
+        updatedFaculty.setName(faculty.getName());
+        updatedFaculty.setColor(faculty.getColor());
+        return facultyRepository.save(updatedFaculty);
     }
 
     public void deleteFaculty(Long id) {
@@ -47,6 +53,7 @@ public class FacultyService {
         Faculty faculty = facultyRepository.findFacultyById(id);
         return (faculty != null) ? faculty.getStudent() : Collections.emptyList();
     }
+
     public Collection<Faculty> filterColor(String color) {
         return facultyRepository.findAll()
                 .stream()

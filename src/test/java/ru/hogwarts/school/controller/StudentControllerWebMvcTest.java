@@ -5,12 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.hogwarts.school.model.Student;
@@ -86,43 +84,69 @@ public class StudentControllerWebMvcTest {
     }
 
     @Test
-    void editStudentTest() throws Exception {
+    void updateStudentTest() throws Exception {
         Long id = 1L;
         String name = "Oleg";
         int age = 15;
         int newAge = 16;
 
         Student student = new Student(id, name, age);
-        Student changedStudent = new Student(id, name, newAge);
+        Student updatedStudent = new Student(id, name, newAge);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", id);
         jsonObject.put("name", name);
         jsonObject.put("age", newAge);
 
-        when(studentService.updateStudent(student)).thenReturn(changedStudent);
-        when(studentRepository.findStudentById(id)).thenReturn(changedStudent);
-        when(studentRepository.save(student)).thenReturn(changedStudent);
+        when(studentService.updateStudent(eq(id), any(Student.class))).thenReturn(updatedStudent);
+        when(studentRepository.findStudentById(id)).thenReturn(updatedStudent);
+        when(studentRepository.save(student)).thenReturn(updatedStudent);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .put("/student")
+                        .put("/student/update/" + id)
                         .content(jsonObject.toString())
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.age").value(newAge));
     }
+
+    @Test
+    void updateStudentNegativeTest() throws Exception {
+        Long id = 1L;
+        String name = "Oleg";
+        int age = 15;
+        int newAge = 16;
+
+        Student student = new Student(id, name, age);
+        Student updatedStudent = new Student(id, name, newAge);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", id);
+        jsonObject.put("name", name);
+        jsonObject.put("age", newAge);
+
+        when(studentRepository.findStudentById(id)).thenReturn(null);
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/student/update/" + id)
+                        .content(jsonObject.toString())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
     @Test
     public void testDeleteStudent() throws Exception {
-        long id = 1;
+        long id = 1L;
         String name = "Bob";
         int age = 37;
         Student student = new Student(id, name, age);
 
-        when(studentRepository.findById(any())).thenReturn(Optional.of(student));
+        when(studentRepository.findStudentById(id)).thenReturn(student);
 
         mockMvc.perform(MockMvcRequestBuilders
-                        .delete("/student/" + id)
+                        .delete("/student/delete/" + id)
                         .contentType(MediaType.APPLICATION_JSON)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());

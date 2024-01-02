@@ -33,13 +33,13 @@ public class StudentController {
         return ResponseEntity.ok(student);
     }
 
-    @PutMapping
-    public ResponseEntity<Student> editStudent(@RequestBody Student student) {
-        Student studentForEdit = studentService.updateStudent(student);
-        if (studentForEdit == null) {
+    @PutMapping("/update/{id}")
+    public ResponseEntity<Student> editStudent(@PathVariable long id, @RequestBody Student student) {
+        Student updatedStudent = studentService.updateStudent(id, student);
+        if (updatedStudent == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(studentForEdit);
+        return ResponseEntity.ok(updatedStudent);
     }
 
     @DeleteMapping("/delete/{id}")
