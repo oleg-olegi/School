@@ -11,4 +11,4 @@ public interface AvatarRepository extends JpaRepository<Avatar, Long> {
 
     void deleteByStudentId(Long studentId);
 
-}
+ }

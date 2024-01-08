@@ -68,11 +68,6 @@ public class AvatarService {
         return avatarRepository.findByStudentId(studentId).orElse(new Avatar());
     }
 
-    public List<Avatar> findAll(Integer page, Integer size) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size);
-        return avatarRepository.findAll(pageRequest).getContent();
-    }
-
     private byte[] generateImagePreview(Path filePath) throws IOException {
         try (InputStream is = Files.newInputStream(filePath);
              BufferedInputStream bis = new BufferedInputStream(is, 1024);
@@ -91,6 +86,18 @@ public class AvatarService {
 
     private String getExtension(String filename) {
         return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    //пагинация превьюх аватарок. работает, но непонятно как
+    public List<Avatar> findAvatarPreviews(Integer pageNumber, Integer size) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, size);
+        return avatarRepository.findAll(pageRequest).getContent();
+    }
+
+    //пагинация JSON-объектов аватарок
+    public List<Avatar> findAll(Integer pageNumber, Integer size) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, size);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 }
 

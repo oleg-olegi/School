@@ -59,18 +59,19 @@ public class AvatarController {
              OutputStream os = response.getOutputStream();) {
             response.setStatus(200);
             response.setContentType(avatar.getMediaType());
-            response.setContentLength((int)avatar.getFileSize());
+            response.setContentLength((int) avatar.getFileSize());
             is.transferTo(os);
         }
     }
 
     @DeleteMapping("/deleteAvatar/{studentId}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable long studentId) {
-        if (avatarService.findAvatar(studentId).getData()!=null) {
+        if (avatarService.findAvatar(studentId).getData() != null) {
             avatarService.deleteAvatar(studentId);
             return ResponseEntity.ok().build();
         }
-        return ResponseEntity.badRequest().build();}
+        return ResponseEntity.badRequest().build();
+    }
 
     @GetMapping("/paging")
     public ResponseEntity<List<Avatar>> getAllPaging(@RequestParam Integer pageNumber, @RequestParam Integer size) {
@@ -82,5 +83,27 @@ public class AvatarController {
             return ResponseEntity.noContent().build(); // Возвращаем 204 No Content, если список пуст
         }
         return ResponseEntity.ok(avatars);
+    }
+
+    @GetMapping("/avatar-preview-paging")
+    public ResponseEntity<byte[]> getPagingPreview(@RequestParam Integer pageNumber,
+                                                   @RequestParam(defaultValue = "1") Integer size) {
+        // Проверка на отрицательные значения pageNumber и size
+        if (pageNumber < 0 || size <= 0) {
+            return ResponseEntity.badRequest().build();
+        }
+        // Получение пагинированного списка аватаров
+        List<Avatar> avatarPreviews = avatarService.findAvatarPreviews(pageNumber, size);
+        // Если список пуст, возвращаем 204 No Content
+        if (avatarPreviews.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+        // Получение предварительного просмотра из первого элемента списка (первого элемента текущей страницы)
+        Avatar preview = avatarPreviews.get(0);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentLength(preview.getData().length);
+        headers.setContentType(MediaType.parseMediaType(preview.getMediaType()));
+        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(preview.getData());
     }
 }
