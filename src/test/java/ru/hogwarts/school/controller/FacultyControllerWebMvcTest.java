@@ -15,13 +15,12 @@ import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.service.FacultyService;
 
 
-import java.util.Optional;
-
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(controllers = FacultyController.class)
+
 public class FacultyControllerWebMvcTest {
     @Autowired
     private MockMvc mockMvc;
