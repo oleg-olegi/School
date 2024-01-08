@@ -74,6 +74,13 @@ public class AvatarController {
 
     @GetMapping("/paging")
     public ResponseEntity<List<Avatar>> getAllPaging(@RequestParam Integer pageNumber, @RequestParam Integer size) {
-        return ResponseEntity.ok(avatarService.findAll(pageNumber, size));
+        if (pageNumber < 0 || size <= 0) {
+            return ResponseEntity.badRequest().build(); // Возвращаем 400 Bad Request в случае некорректных параметров
+        }
+        List<Avatar> avatars = avatarService.findAll(pageNumber, size);
+        if (avatars.isEmpty()) {
+            return ResponseEntity.noContent().build(); // Возвращаем 204 No Content, если список пуст
+        }
+        return ResponseEntity.ok(avatars);
     }
 }
