@@ -3,7 +3,9 @@ CREATE TABLE People
     person_id   INT PRIMARY KEY,
     name        VARCHAR(255),
     age         INT,
-    has_license BOOLEAN
+    has_license BOOLEAN,
+    car_id      INT,
+    FOREIGN KEY (car_id) REFERENCES Cars (car_id)
 );
 
 CREATE TABLE Cars
