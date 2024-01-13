@@ -2,6 +2,7 @@ package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -89,9 +90,9 @@ public class AvatarService {
     }
 
     //пагинация превьюх аватарок. работает, но непонятно как
-    public List<Avatar> findAvatarPreviews(Integer pageNumber, Integer size) {
+    public Page<Avatar> findAvatarPreviews(Integer pageNumber, Integer size) {
         PageRequest pageRequest = PageRequest.of(pageNumber - 1, size);
-        return avatarRepository.findAll(pageRequest).getContent();
+        return avatarRepository.findAll(pageRequest);
     }
 
     //пагинация JSON-объектов аватарок

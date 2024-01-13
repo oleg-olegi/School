@@ -1,6 +1,7 @@
 package ru.hogwarts.school.controller;
 
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -93,17 +94,16 @@ public class AvatarController {
             return ResponseEntity.badRequest().build();
         }
         // Получение пагинированного списка аватаров
-        List<Avatar> avatarPreviews = avatarService.findAvatarPreviews(pageNumber, size);
-        // Если список пуст, возвращаем 204 No Content
-        if (avatarPreviews.isEmpty()) {
+        Page<Avatar> avatarPreviews = avatarService.findAvatarPreviews(pageNumber, size);
+        // Получение предварительного просмотра из первого элемента списка (первого элемента текущей страницы)
+        if (avatarPreviews.hasContent()) {
+            Avatar preview = avatarPreviews.getContent().get(0);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentLength(preview.getData().length);
+            headers.setContentType(MediaType.parseMediaType(preview.getMediaType()));
+            return ResponseEntity.status(HttpStatus.OK).headers(headers).body(preview.getData());
+        } else {
             return ResponseEntity.noContent().build();
         }
-        // Получение предварительного просмотра из первого элемента списка (первого элемента текущей страницы)
-        Avatar preview = avatarPreviews.get(0);
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentLength(preview.getData().length);
-        headers.setContentType(MediaType.parseMediaType(preview.getMediaType()));
-        return ResponseEntity.status(HttpStatus.OK).headers(headers).body(preview.getData());
     }
 }
