@@ -15,6 +15,8 @@ import ru.hogwarts.school.repository.FacultyRepository;
 import ru.hogwarts.school.service.FacultyService;
 
 
+import java.util.Optional;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -40,7 +42,7 @@ public class FacultyControllerWebMvcTest {
         String color = "Синий";
 
         Faculty faculty = new Faculty(id, name, color);
-        when(facultyRepository.findFacultyById(id)).thenReturn(faculty);
+        when(facultyRepository.findFacultyById(id)).thenReturn(Optional.of(faculty));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .get("/faculty/" + id))
@@ -87,8 +89,8 @@ public class FacultyControllerWebMvcTest {
         Faculty curFaculty = new Faculty(id, name, color);
         Faculty newFaculty = new Faculty(id, name, newColor);
 
-        when(facultyService.updateFaculty(eq(id), any(Faculty.class))).thenReturn(newFaculty);
-        when(facultyRepository.findFacultyById(id)).thenReturn(curFaculty);
+        when(facultyService.updateFaculty(eq(id), any(Faculty.class))).thenReturn(Optional.of(newFaculty));
+        when(facultyRepository.findFacultyById(id)).thenReturn(Optional.of(curFaculty));
         when(facultyRepository.save(any(Faculty.class))).thenReturn(newFaculty);
 
         mockMvc.perform(MockMvcRequestBuilders
@@ -109,7 +111,7 @@ public class FacultyControllerWebMvcTest {
         String color = "Синий";
         Faculty faculty = new Faculty(id, name, color);
 
-        when(facultyRepository.findFacultyById(id)).thenReturn(faculty);
+        when(facultyRepository.findFacultyById(id)).thenReturn(Optional.of(faculty));
 
         mockMvc.perform(MockMvcRequestBuilders
                         .delete("/faculty/" + id)

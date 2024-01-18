@@ -27,11 +27,11 @@ import static java.nio.file.StandardOpenOption.CREATE_NEW;
 @Service
 @Transactional //bad practice
 public class AvatarService {
-    private final static Logger logger = LoggerFactory.getLogger(AvatarService.class);
     @Value("${path.to.avatars.folder}")
     private String avatarDir;
     private final StudentService studentService;
     private final AvatarRepository avatarRepository;
+    private final static Logger logger = LoggerFactory.getLogger(AvatarService.class);
 
     @Autowired
     public AvatarService(AvatarRepository avatarRepository, StudentService studentService) {
