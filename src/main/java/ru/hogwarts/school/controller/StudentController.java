@@ -8,6 +8,7 @@ import ru.hogwarts.school.service.StudentService;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 
 @RestController
@@ -27,20 +28,14 @@ public class StudentController {
 
     @GetMapping("{id}")
     public ResponseEntity<Student> findStudent(@PathVariable long id) {
-        Student student = studentService.findStudent(id);
-        if (student == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(student);
+        Optional<Student> student = studentService.findStudent(id);
+        return student.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Student> editStudent(@PathVariable long id, @RequestBody Student student) {
-        Student updatedStudent = studentService.updateStudent(id, student);
-        if (updatedStudent == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(updatedStudent);
+        Optional<Student> updatedStudent = studentService.updateStudent(id, student);
+        return updatedStudent.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/delete/{id}")
@@ -79,7 +74,8 @@ public class StudentController {
 
     @GetMapping("/studentsFaculty/{id}")
     public ResponseEntity<Faculty> getStudentsFaculty(@PathVariable long id) {
-        return ResponseEntity.ok(studentService.getStudentsFaculty(id));
+        Optional<Faculty> facultyOptional = studentService.getStudentsFaculty(id);
+        return facultyOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
 

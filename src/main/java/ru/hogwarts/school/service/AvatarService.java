@@ -21,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
 
@@ -44,8 +45,8 @@ public class AvatarService {
         try {
             logger.info("Начало загрузки аватара для студента с ID {}.", studentId);
 
-            Student student = studentService.findStudent(studentId);
-            Path filePath = Path.of(avatarDir, student.getName() + "." + getExtension(Objects.requireNonNull(file.getOriginalFilename())));
+            Optional<Student> student = studentService.findStudent(studentId);
+            Path filePath = Path.of(avatarDir, student.get().getName() + "." + getExtension(Objects.requireNonNull(file.getOriginalFilename())));
             Files.createDirectories(filePath.getParent());
             Files.deleteIfExists(filePath);
             try (
@@ -57,7 +58,7 @@ public class AvatarService {
                 bis.transferTo(bos);
             }
             Avatar avatar = findAvatar(studentId);
-            avatar.setStudent(student);
+            avatar.setStudent(student.get());
             avatar.setFilePath(filePath.toString());
             avatar.setData(file.getBytes());
             avatar.setFileSize(file.getSize());

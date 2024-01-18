@@ -60,7 +60,7 @@ public class FacultyService {
             logger.info("Faculty ID {} successfully updated: {}", id, updatedFaculty);
             return Optional.of(updatedFaculty);
         } else {
-            logger.info("Faculty not found with ID: {}", id);
+            logger.info("Student not found with ID: {}", id);
             return Optional.empty();
         }
     }
