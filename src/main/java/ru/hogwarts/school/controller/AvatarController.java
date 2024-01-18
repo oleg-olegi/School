@@ -20,6 +20,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 @RestController
+@RequestMapping ("/avatar")
 public class AvatarController {
     private final AvatarService avatarService;
 
@@ -27,14 +28,14 @@ public class AvatarController {
         this.avatarService = avatarService;
     }
 
-    @PostMapping(value = "/{studentId}/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{studentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<String> uploadAvatar
             (@PathVariable long studentId, @RequestParam MultipartFile avatar) throws IOException {
         avatarService.uploadAvatar(studentId, avatar);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/avatar-preview/{studentId}")
+    @GetMapping("/preview/{studentId}")
     public ResponseEntity<byte[]> downloadPreview(@PathVariable Long studentId) {
         Avatar preview = avatarService.findAvatar(studentId);
         HttpHeaders headers = new HttpHeaders();
@@ -43,7 +44,7 @@ public class AvatarController {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(preview.getData());
     }
 
-    @GetMapping("/avatar-from-db/{studentId}")
+    @GetMapping("/from-db/{studentId}")
     public ResponseEntity<byte[]> downloadAvatar(@PathVariable Long studentId) {
         Avatar avatar = avatarService.findAvatar(studentId);
         HttpHeaders headers = new HttpHeaders();
@@ -52,7 +53,7 @@ public class AvatarController {
         return ResponseEntity.status(HttpStatus.OK).headers(headers).body(avatar.getData());
     }
 
-    @GetMapping("avatar-from-file/{studentId}")
+    @GetMapping("from-file/{studentId}")
     public void downloadAvatar(@PathVariable Long studentId, HttpServletResponse response) throws IOException {
         Avatar avatar = avatarService.findAvatar(studentId);
         Path path = Path.of(avatar.getFilePath());
@@ -65,7 +66,7 @@ public class AvatarController {
         }
     }
 
-    @DeleteMapping("/deleteAvatar/{studentId}")
+    @DeleteMapping("/delete/{studentId}")
     public ResponseEntity<Void> deleteAvatar(@PathVariable long studentId) {
         if (avatarService.findAvatar(studentId).getData() != null) {
             avatarService.deleteAvatar(studentId);
@@ -86,7 +87,7 @@ public class AvatarController {
         return ResponseEntity.ok(avatars);
     }
 
-    @GetMapping("/avatar-preview-paging")
+    @GetMapping("/preview-paging")
     public ResponseEntity<byte[]> getPagingPreview(@RequestParam Integer pageNumber,
                                                    @RequestParam(defaultValue = "1") Integer size) {
         // Проверка на отрицательные значения pageNumber и size
