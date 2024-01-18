@@ -2,6 +2,8 @@ package ru.hogwarts.school.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +17,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Objects;
 
 import static java.nio.file.StandardOpenOption.CREATE_NEW;
@@ -84,6 +87,18 @@ public class AvatarService {
 
     private String getExtension(String filename) {
         return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    //пагинация превьюх аватарок. работает, но непонятно как
+    public Page<Avatar> findAvatarPreviews(Integer pageNumber, Integer size) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, size);
+        return avatarRepository.findAll(pageRequest);
+    }
+
+    //пагинация JSON-объектов аватарок
+    public List<Avatar> findAll(Integer pageNumber, Integer size) {
+        PageRequest pageRequest = PageRequest.of(pageNumber - 1, size);
+        return avatarRepository.findAll(pageRequest).getContent();
     }
 }
 
