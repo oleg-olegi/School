@@ -1,5 +1,6 @@
 package ru.hogwarts.school.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.hogwarts.school.model.Faculty;
@@ -7,6 +8,7 @@ import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.service.FacultyService;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/faculty")
@@ -17,27 +19,33 @@ public class FacultyController {
         this.facultyService = facultyService;
     }
 
-    @PostMapping//create Faculty
-    public Faculty createFaculty(@RequestBody Faculty faculty) {
-        return facultyService.createFaculty(faculty);
+    //create Faculty
+    @PostMapping
+    public ResponseEntity<?> createFaculty(@RequestBody Faculty faculty) {
+        Faculty createdFaculty = facultyService.createFaculty(faculty);
+        if (createdFaculty != null) {
+            return new ResponseEntity<>(createdFaculty, HttpStatus.CREATED);
+        } else {
+            return new ResponseEntity<>("Ошибка при создании факультета", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @GetMapping("{id}")//read Faculty
     public ResponseEntity<Faculty> findFaculty(@PathVariable long id) {
-        Faculty foundedFaculty = facultyService.findFaculty(id);
+        Optional<Faculty> foundedFaculty = facultyService.findFaculty(id);
         if (foundedFaculty == null) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(foundedFaculty);
+        return ResponseEntity.ok(foundedFaculty.get());
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<Faculty> editFaculty(@PathVariable long id, @RequestBody Faculty faculty) {
-        Faculty editedFaculty = facultyService.updateFaculty(id, faculty);
-        if (editedFaculty == null) {
+        Optional<Faculty> editedFaculty = facultyService.updateFaculty(id, faculty);
+        if (editedFaculty.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(editedFaculty);
+        return ResponseEntity.ok(editedFaculty.get());
     }
 
     @DeleteMapping("{id}")

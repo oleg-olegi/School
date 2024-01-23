@@ -1,5 +1,7 @@
 package ru.hogwarts.school.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
@@ -8,11 +10,14 @@ import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class FacultyService {
     private final FacultyRepository facultyRepository;
+
+    private final static Logger logger = LoggerFactory.getLogger(FacultyService.class);
 
     @Autowired
     public FacultyService(FacultyRepository facultyRepository) {
@@ -20,38 +25,89 @@ public class FacultyService {
     }
 
     public Faculty createFaculty(Faculty faculty) {
-        return facultyRepository.save(faculty);
-    }
-
-    public Faculty findFaculty(Long id) {
-        return facultyRepository.findFacultyById(id);
-    }
-
-    public Faculty updateFaculty(long id, Faculty faculty) {
-        Faculty updatedFaculty = facultyRepository.findFacultyById(id);
-        if (updatedFaculty == null) {
+        try {
+            logger.info("Создание нового факультета: {}", faculty);
+            Faculty createdFaculty = facultyRepository.save(faculty);
+            logger.info("Факультет успешно создан. ID нового факультета: {}", createdFaculty.getId());
+            return createdFaculty;
+        } catch (Exception e) {
+            logger.error("Ошибка при создании нового факультета.", e);
             return null;
         }
-        updatedFaculty.setName(faculty.getName());
-        updatedFaculty.setColor(faculty.getColor());
-        return facultyRepository.save(updatedFaculty);
+    }
+
+    public Optional<Faculty> findFaculty(Long id) {
+        logger.info("Trying to find faculty with ID: {}", id);
+        Optional<Faculty> faculty = facultyRepository.findFacultyById(id);
+        if (faculty.isPresent()) {
+            logger.info("Faculty found with ID {}: {}", id, faculty.get());
+        } else {
+            logger.info("Faculty not found with ID: {}", id);
+        }
+        return faculty;
+    }
+
+    public Optional<Faculty> updateFaculty(long id, Faculty faculty) {
+        logger.info("Trying to refactor faculty with ID: {}", id);
+
+        Optional<Faculty> facultyOptional = findFaculty(id);
+
+        if (facultyOptional.isPresent()) {
+            Faculty existingFaculty = facultyOptional.get();
+            existingFaculty.setName(faculty.getName());
+            existingFaculty.setColor(faculty.getColor());
+            Faculty updatedFaculty = facultyRepository.save(existingFaculty);
+            logger.info("Faculty ID {} successfully updated: {}", id, updatedFaculty);
+            return Optional.of(updatedFaculty);
+        } else {
+            logger.info("Student not found with ID: {}", id);
+            return Optional.empty();
+        }
     }
 
     public void deleteFaculty(Long id) {
-        facultyRepository.deleteById(id);
+        logger.info("Trying to delete faculty with ID: {}", id);
+
+        if (facultyRepository.existsById(id)) {
+            facultyRepository.deleteById(id);
+            logger.info("Faculty with ID {} successfully deleted.", id);
+        } else {
+            logger.warn("Faculty not found with ID: {}. Deletion failed.", id);
+        }
     }
 
+
     public Faculty findByName(String name) {
-        return facultyRepository.findFacultyByNameIgnoreCase(name);
+        logger.info("Trying to find faculty by name: {}", name);
+
+        Faculty faculty = facultyRepository.findFacultyByNameIgnoreCase(name);
+
+        if (faculty != null) {
+            logger.info("Faculty found by name {}: {}", name, faculty);
+        } else {
+            logger.info("No faculty found with name: {}", name);
+        }
+        return faculty;
     }
 
     public Faculty findByColor(String color) {
-        return facultyRepository.findFacultyByColorIgnoreCase(color);
+        logger.info("Trying to find faculty by color: {}", color);
+
+        Faculty faculty = facultyRepository.findFacultyByColorIgnoreCase(color);
+
+        if (faculty != null) {
+            logger.info("Faculty found by color {}: {}", color, faculty);
+        } else {
+            logger.info("No faculty found with color: {}", color);
+        }
+
+        return faculty;
     }
 
     public Collection<Student> getStudentsOfFaculty(long id) {
-        Faculty faculty = facultyRepository.findFacultyById(id);
-        return (faculty != null) ? faculty.getStudent() : Collections.emptyList();
+        return findFaculty(id)
+                .map(Faculty::getStudent)
+                .orElse(Collections.emptyList());
     }
 
     public Collection<Faculty> filterColor(String color) {
