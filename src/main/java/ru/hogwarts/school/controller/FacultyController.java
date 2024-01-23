@@ -82,6 +82,11 @@ public class FacultyController {
     public ResponseEntity<String> getLongestFacultyName() {
         return ResponseEntity.ok(facultyService.getLongestFacultyName());
     }
+
+    @GetMapping("/strange-task")
+    public ResponseEntity<Integer> getInteger() {
+        return ResponseEntity.ok(facultyService.getInteger());
+    }
 }
 
 

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 public class FacultyService {
@@ -122,5 +123,13 @@ public class FacultyService {
                 .map(Faculty::getName)
                 .max(Comparator.comparingInt(String::length))
                 .orElse("");
+    }
+
+    public Integer getInteger() {
+        return Stream
+                .iterate(1, a -> a + 1)
+                .parallel()
+                .limit(1_000_000)
+                .reduce(0, (a, b) -> a + b);
     }
 }
