@@ -3,12 +3,14 @@ package ru.hogwarts.school.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -109,5 +111,20 @@ public class StudentService {
 
     public List<Student> getLastFiveStudents() {
         return studentRepository.getLastFiveStudents();
+    }
+
+    public List<Student> filterWithAHigherCase() {
+        return studentRepository.findAll().stream()
+                .peek(student -> {
+                    String name = student.getName();
+                    if (name != null && !name.isEmpty()) {
+                        char firstCharUpper = Character.toUpperCase(name.charAt(0));
+                        String restOfString = name.substring(1);
+                        student.setName(firstCharUpper + restOfString);
+                    }
+                })
+                .filter(s -> s.getName().startsWith("A"))
+                .sorted(Comparator.comparing(Student::getName))
+                .toList();
     }
 }
