@@ -86,6 +86,9 @@ public class FacultyController {
     @GetMapping("/strange-task")
     public ResponseEntity<Integer> getInteger() {
         return ResponseEntity.ok(facultyService.getInteger());
+    }@GetMapping("/strange-task2")
+    public ResponseEntity<Integer> getInteger2() {
+        return ResponseEntity.ok(facultyService.getInteger2());
     }
 }
 

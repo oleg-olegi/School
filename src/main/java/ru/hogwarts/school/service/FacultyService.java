@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 @Service
@@ -126,10 +127,24 @@ public class FacultyService {
     }
 
     public Integer getInteger() {
-        return Stream
-                .iterate(1, a -> a + 1)
-                .parallel()
+        long startTime = System.currentTimeMillis();
+        logger.info("Start method");
+        int sum = IntStream.range(0, 1_000_000)
+                .reduce(0, Integer::sum);
+
+        logger.info("Finish time  " + (System.currentTimeMillis() - startTime));
+        return sum;
+    } // better result
+
+    public Integer getInteger2() {
+        long startTime = System.currentTimeMillis();
+        logger.info("Start method");
+        int sum = Stream
+                .iterate(0, a -> a + 1)
                 .limit(1_000_000)
-                .reduce(0, (a, b) -> a + b);
+                .reduce(0, Integer::sum);
+
+        logger.info("Finish time  " + (System.currentTimeMillis() - startTime));
+        return sum;
     }
 }
