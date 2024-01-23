@@ -10,6 +10,7 @@ import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -100,7 +101,6 @@ public class FacultyService {
         } else {
             logger.info("No faculty found with color: {}", color);
         }
-
         return faculty;
     }
 
@@ -115,5 +115,12 @@ public class FacultyService {
                 .stream()
                 .filter(faculty -> faculty.getColor().equals(color))
                 .collect(Collectors.toList());
+    }
+
+    public String getLongestFacultyName() {
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("");
     }
 }

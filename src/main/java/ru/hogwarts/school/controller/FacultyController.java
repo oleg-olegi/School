@@ -77,6 +77,11 @@ public class FacultyController {
     public Collection<Faculty> colorFilteredFaculties(@PathVariable String color) {
         return facultyService.filterColor(color);
     }
+
+    @GetMapping("/longest_faculty-name")
+    public ResponseEntity<String> getLongestFacultyName() {
+        return ResponseEntity.ok(facultyService.getLongestFacultyName());
+    }
 }
 
 
