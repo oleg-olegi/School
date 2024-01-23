@@ -87,4 +87,9 @@ public class StudentController {
     public ResponseEntity<List<Student>> getStudentsStartedWithA() {
         return ResponseEntity.ok(studentService.filterWithAHigherCase());
     }
+
+    @GetMapping("/average-age-of-students")
+    public ResponseEntity<Double> getAverageAgeStreamAPI() {
+        return ResponseEntity.ok(studentService.getAverageAgeOfStudents());
+    }
 }

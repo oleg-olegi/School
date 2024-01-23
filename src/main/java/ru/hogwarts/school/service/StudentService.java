@@ -127,4 +127,11 @@ public class StudentService {
                 .sorted(Comparator.comparing(Student::getName))
                 .toList();
     }
+
+    public Double getAverageAgeOfStudents() {
+        return studentRepository.findAll().stream()
+                .mapToInt(Student::getAge)
+                .average()
+                .orElse(0);
+    }
 }
