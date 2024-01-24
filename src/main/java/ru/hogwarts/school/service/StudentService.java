@@ -113,14 +113,12 @@ public class StudentService {
         return studentRepository.getLastFiveStudents();
     }
 
-    public List<Student> filterWithAHigherCase() {
+    public List<Student> filterWithAUpperCase() {
         return studentRepository.findAll().stream()
                 .peek(student -> {
                     String name = student.getName();
                     if (name != null && !name.isEmpty()) {
-                        char firstCharUpper = Character.toUpperCase(name.charAt(0));
-                        String restOfString = name.substring(1);
-                        student.setName(firstCharUpper + restOfString);
+                        student.setName(setFirstCharToUpperCase(name));
                     }
                 })
                 .filter(s -> s.getName().startsWith("A"))
@@ -128,10 +126,42 @@ public class StudentService {
                 .toList();
     }
 
+    private String setFirstCharToUpperCase(String name) {
+        char firstCharUpper = Character.toUpperCase(name.charAt(0));
+        String restOfString = name.substring(1);
+        return firstCharUpper + restOfString;
+    }
+
     public Double getAverageAgeOfStudents() {
         return studentRepository.findAll().stream()
                 .mapToInt(Student::getAge)
                 .average()
                 .orElse(0);
+    }
+
+    public void printParallel() {
+        List<Student> students = studentRepository.findAll()
+                .stream()
+                .limit(7)
+                .toList();
+
+        printName(students, 0);
+        printName(students, 1);
+
+        Thread thread1 = new Thread(() -> {
+            printName(students, 2);
+            printName(students, 3);
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(() -> {
+            printName(students, 4);
+            printName(students, 5);
+        });
+        thread2.start();
+    }
+
+    private void printName(List<Student> students, int number) {
+        System.out.println(students.get(number).getName());
     }
 }
