@@ -142,7 +142,7 @@ public class StudentService {
     public void printParallel() {
         List<Student> students = studentRepository.findAll()
                 .stream()
-                .limit(7)
+                .limit(6)
                 .toList();
 
         printName(students, 0);
@@ -159,9 +159,49 @@ public class StudentService {
             printName(students, 5);
         });
         thread2.start();
+        try {
+            //join вызывается для ожидания завершения каждого потока
+            // перед продолжением выполнения основного потока
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     private void printName(List<Student> students, int number) {
+        System.out.println(students.get(number).getName());
+    }
+
+    public void printSynchronized() {
+        List<Student> students = studentRepository.findAll()
+                .stream()
+                .limit(6)
+                .toList();
+
+        synchronizedMethod(students, 0);
+        synchronizedMethod(students, 1);
+
+        Thread thread1 = new Thread(() -> {
+            synchronizedMethod(students, 2);
+            synchronizedMethod(students, 3);
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(() -> {
+            synchronizedMethod(students, 4);
+            synchronizedMethod(students, 5);
+        });
+        thread2.start();
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private synchronized void synchronizedMethod(List<Student> students, int number) {
         System.out.println(students.get(number).getName());
     }
 }
