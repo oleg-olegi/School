@@ -9,10 +9,7 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -113,14 +110,12 @@ public class StudentService {
         return studentRepository.getLastFiveStudents();
     }
 
-    public List<Student> filterWithAHigherCase() {
+    public List<Student> filterWithAUpperCase() {
         return studentRepository.findAll().stream()
                 .peek(student -> {
                     String name = student.getName();
                     if (name != null && !name.isEmpty()) {
-                        char firstCharUpper = Character.toUpperCase(name.charAt(0));
-                        String restOfString = name.substring(1);
-                        student.setName(firstCharUpper + restOfString);
+                        student.setName(setFirstCharToUpperCase(name));
                     }
                 })
                 .filter(s -> s.getName().startsWith("A"))
@@ -128,10 +123,82 @@ public class StudentService {
                 .toList();
     }
 
+    private String setFirstCharToUpperCase(String name) {
+        char firstCharUpper = Character.toUpperCase(name.charAt(0));
+        String restOfString = name.substring(1);
+        return firstCharUpper + restOfString;
+    }
+
     public Double getAverageAgeOfStudents() {
         return studentRepository.findAll().stream()
                 .mapToInt(Student::getAge)
                 .average()
                 .orElse(0);
+    }
+
+    public void printParallel() {
+        Queue<Student> students = new LinkedList<>(studentRepository.findAll()
+                .stream()
+                .limit(6)
+                .toList());
+//возвращаем с удалением для освобождения ресурсов :-)
+        printName(Objects.requireNonNull(students.poll()));
+        printName(Objects.requireNonNull(students.poll()));
+
+        Thread thread1 = new Thread(() -> {
+            printName(Objects.requireNonNull(students.poll()));
+            printName(Objects.requireNonNull(students.poll()));
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(() -> {
+            printName(Objects.requireNonNull(students.poll()));
+            printName(Objects.requireNonNull(students.poll()));
+        });
+        thread2.start();
+        try {
+            //join вызывается для ожидания завершения каждого потока
+            // перед продолжением выполнения основного потока
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private void printName(Student student) {
+        System.out.println(student.getName());
+    }
+
+    public void printSynchronized() {
+        Queue<Student> students = new LinkedList<>(studentRepository.findAll()
+                .stream()
+                .limit(6)
+                .toList());
+
+        synchronizedMethod(Objects.requireNonNull(students.poll()));
+        synchronizedMethod(Objects.requireNonNull(students.poll()));
+
+        Thread thread1 = new Thread(() -> {
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
+        });
+        thread1.start();
+
+        Thread thread2 = new Thread(() -> {
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
+        });
+        thread2.start();
+        try {
+            thread1.join();
+            thread2.join();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private synchronized void synchronizedMethod(Student student) {
+        System.out.println(student.getName());
     }
 }

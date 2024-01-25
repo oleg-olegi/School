@@ -85,11 +85,23 @@ public class StudentController {
 
     @GetMapping("/students-starts-with-A")
     public ResponseEntity<List<Student>> getStudentsStartedWithA() {
-        return ResponseEntity.ok(studentService.filterWithAHigherCase());
+        return ResponseEntity.ok(studentService.filterWithAUpperCase());
     }
 
     @GetMapping("/average-age-of-students")
     public ResponseEntity<Double> getAverageAgeStreamAPI() {
         return ResponseEntity.ok(studentService.getAverageAgeOfStudents());
+    }
+
+    @GetMapping("/print-parallel")
+    public ResponseEntity<Void> printParallel() {
+        studentService.printParallel();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/print-synchronized")
+    public ResponseEntity<Void> printSynchronized() {
+        studentService.printSynchronized();
+        return ResponseEntity.ok().build();
     }
 }
