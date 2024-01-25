@@ -78,9 +78,18 @@ public class StudentController {
         return facultyOptional.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-
     @GetMapping("/ageFilter/{age}")
     public Collection<Student> ageFilteredStudents(@PathVariable int age) {
         return studentService.filterAge(age);
+    }
+
+    @GetMapping("/students-starts-with-A")
+    public ResponseEntity<List<Student>> getStudentsStartedWithA() {
+        return ResponseEntity.ok(studentService.filterWithAHigherCase());
+    }
+
+    @GetMapping("/average-age-of-students")
+    public ResponseEntity<Double> getAverageAgeStreamAPI() {
+        return ResponseEntity.ok(studentService.getAverageAgeOfStudents());
     }
 }

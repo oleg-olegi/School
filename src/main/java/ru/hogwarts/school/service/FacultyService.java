@@ -10,8 +10,11 @@ import ru.hogwarts.school.repository.FacultyRepository;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 @Service
 public class FacultyService {
@@ -100,7 +103,6 @@ public class FacultyService {
         } else {
             logger.info("No faculty found with color: {}", color);
         }
-
         return faculty;
     }
 
@@ -115,5 +117,34 @@ public class FacultyService {
                 .stream()
                 .filter(faculty -> faculty.getColor().equals(color))
                 .collect(Collectors.toList());
+    }
+
+    public String getLongestFacultyName() {
+        return facultyRepository.findAll().stream()
+                .map(Faculty::getName)
+                .max(Comparator.comparingInt(String::length))
+                .orElse("");
+    }
+
+    public Integer getInteger() {
+        long startTime = System.currentTimeMillis();
+        logger.info("Start method");
+        int sum = IntStream.range(0, 1_000_000)
+                .reduce(0, Integer::sum);
+
+        logger.info("Finish time  " + (System.currentTimeMillis() - startTime));
+        return sum;
+    } // better result
+
+    public Integer getInteger2() {
+        long startTime = System.currentTimeMillis();
+        logger.info("Start method");
+        int sum = Stream
+                .iterate(0, a -> a + 1)
+                .limit(1_000_000)
+                .reduce(0, Integer::sum);
+
+        logger.info("Finish time  " + (System.currentTimeMillis() - startTime));
+        return sum;
     }
 }
