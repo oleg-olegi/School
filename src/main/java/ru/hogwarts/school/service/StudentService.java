@@ -9,10 +9,7 @@ import ru.hogwarts.school.model.Faculty;
 import ru.hogwarts.school.model.Student;
 import ru.hogwarts.school.repository.StudentRepository;
 
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,23 +137,23 @@ public class StudentService {
     }
 
     public void printParallel() {
-        List<Student> students = studentRepository.findAll()
+        Queue<Student> students = new LinkedList<>(studentRepository.findAll()
                 .stream()
                 .limit(6)
-                .toList();
-
-        printName(students, 0);
-        printName(students, 1);
+                .toList());
+//возвращаем с удалением для освобождения ресурсов :-)
+        printName(Objects.requireNonNull(students.poll()));
+        printName(Objects.requireNonNull(students.poll()));
 
         Thread thread1 = new Thread(() -> {
-            printName(students, 2);
-            printName(students, 3);
+            printName(Objects.requireNonNull(students.poll()));
+            printName(Objects.requireNonNull(students.poll()));
         });
         thread1.start();
 
         Thread thread2 = new Thread(() -> {
-            printName(students, 4);
-            printName(students, 5);
+            printName(Objects.requireNonNull(students.poll()));
+            printName(Objects.requireNonNull(students.poll()));
         });
         thread2.start();
         try {
@@ -169,28 +166,28 @@ public class StudentService {
         }
     }
 
-    private void printName(List<Student> students, int number) {
-        System.out.println(students.get(number).getName());
+    private void printName(Student student) {
+        System.out.println(student.getName());
     }
 
     public void printSynchronized() {
-        List<Student> students = studentRepository.findAll()
+        Queue<Student> students = new LinkedList<>(studentRepository.findAll()
                 .stream()
                 .limit(6)
-                .toList();
+                .toList());
 
-        synchronizedMethod(students, 0);
-        synchronizedMethod(students, 1);
+        synchronizedMethod(Objects.requireNonNull(students.poll()));
+        synchronizedMethod(Objects.requireNonNull(students.poll()));
 
         Thread thread1 = new Thread(() -> {
-            synchronizedMethod(students, 2);
-            synchronizedMethod(students, 3);
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
         });
         thread1.start();
 
         Thread thread2 = new Thread(() -> {
-            synchronizedMethod(students, 4);
-            synchronizedMethod(students, 5);
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
+            synchronizedMethod(Objects.requireNonNull(students.poll()));
         });
         thread2.start();
         try {
@@ -201,7 +198,7 @@ public class StudentService {
         }
     }
 
-    private synchronized void synchronizedMethod(List<Student> students, int number) {
-        System.out.println(students.get(number).getName());
+    private synchronized void synchronizedMethod(Student student) {
+        System.out.println(student.getName());
     }
 }
